@@ -106,9 +106,9 @@ public class VisionProcessor {
     }
 
     //Grip Filters
-    static final double[] hue                   = {0, 90};
-    static final double[] saturation            = {60.0, 255.0};
-    static final double[] value                 = {130.0, 255.0};
+    static final double[] hue                   = {20, 90};
+    static final double[] saturation            = {117, 255.0};
+    static final double[] value                 = {202, 255.0};
     static final Scalar lower                   = new Scalar(hue[0], saturation[0], value[0]);
     static final Scalar upper                   = new Scalar(hue[1], saturation[1], value[1]);
 
@@ -129,13 +129,12 @@ public class VisionProcessor {
     {
         // Convert to HSV
         Mat img2 = new Mat();
-        img.copyTo(img, img2);
+        img.copyTo(img2);
         Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2HSV, 3);
         Core.inRange(img, lower, upper, img);
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(img, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-
         List<MatOfPoint> output = new ArrayList<MatOfPoint>();
         for (MatOfPoint contour : contours) {
             double area = Imgproc.contourArea(contour);
@@ -144,15 +143,17 @@ public class VisionProcessor {
             output.add(contour);
         }
         contours = output;
+        // System.out.println(contours);
 
-        List<MatOfPoint> convexHulls = new ArrayList();
+        List<MatOfPoint> convexHulls = new ArrayList<MatOfPoint>();
         try {
-            for (MatOfPoint contour : contours) {
-                MatOfInt hull = null;
-                Imgproc.convexHull(contour, hull);
-                convexHulls.add(new MatOfPoint(hull));
+            for (int i = 0; i < contours.size(); i++) {//MatOfPoint contour : contours) {
+                //MatOfInt hull = null;
+                //Imgproc.convexHull(contours.get(i), hull);
+                //convexHulls.add(new MatOfPoint(hull));
             }
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return img;
         }
 
@@ -242,7 +243,7 @@ public class VisionProcessor {
             // Implements calculations similar to Fig. 12 of the documentation
             double absoluteOuterHorizontalDistance = Math.pow(ox * ox + oy * oy, 0.5);
             double absoluteInnerHorizontalDistance = Math.pow(ix * ix + iy * iy, 0.5);
-
+            // System.out.println(absoluteInnerElevationAngle);
 
             // Calculate the angle of the robot relative the line perpendicular to the inner target
             double robotAngle = robot_angle(absoluteInnerHorizontalDistance, absoluteOuterHorizontalDistance, calculatedInnerDepth);
@@ -269,7 +270,8 @@ public class VisionProcessor {
             Imgproc.drawContours(img2, convexHulls, -1, new Scalar(0, 255, 0), 1);
             Imgproc.line(img2, new Point(320, 0), new Point(320, 480), new Scalar(255, 255, 255), 1);
             return img2;
-        } catch (IndexOutOfBoundsException | NullPointerException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return img;
         }
     }
