@@ -10,6 +10,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -41,6 +42,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Size                 SPECTRUM_SIZE;
     private Scalar               CONTOUR_COLOR;
     private VisionProcessor      v;
+    private int                  Height = 480;
+    private int                  Width = 640;
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -80,6 +83,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.setMaxFrameSize(Width, Height);
         v = new VisionProcessor();
     }
 
@@ -111,7 +115,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     }
 
     public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mRgba = new Mat(width, height, CvType.CV_8UC4);
         mDetector = new ColorBlobDetector();
         mSpectrum = new Mat();
         mBlobColorRgba = new Scalar(255);
@@ -130,8 +134,25 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
-        mRgba = v.processImg(mRgba);
-        return mRgba;
+
+        //Creating an empty matrix to store the result
+        Mat dst = new Mat();
+
+        //Creating the transformation matrix M
+        Mat rotationMatrix = Imgproc.getRotationMatrix2D(new Point(240, 320), -90, 1);
+
+        //Rotating the given image
+        Imgproc.warpAffine(mRgba, dst,rotationMatrix, new Size(mRgba.rows(), mRgba.cols()));
+
+
+//        Imgproc.getRotationMatrix2D();
+//
+//        Mat mRgbaT = mRgba.t();
+//        Core.flip(mRgba.t(), mRgbaT, 1);
+        System.out.println(dst.size());
+//        Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
+        // mRgba = v.processImg(dst);
+        return dst;
     }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {

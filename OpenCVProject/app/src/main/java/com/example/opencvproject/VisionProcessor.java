@@ -268,7 +268,7 @@ public class VisionProcessor {
             Imgproc.line(img2, new Point(320, 0), new Point(320, 480), new Scalar(255, 255, 255), 1);
 
             Imgproc.drawContours(img2, convexHulls, -1, new Scalar(0, 255, 0), 1);
-            Imgproc.line(img2, new Point(320, 0), new Point(320, 480), new Scalar(255, 255, 255), 1);
+            Imgproc.line(img2, new Point(0, 240), new Point(640, 240), new Scalar(255, 255, 255), 1);
             return img2;
         } catch (Exception e) {
             e.printStackTrace();
