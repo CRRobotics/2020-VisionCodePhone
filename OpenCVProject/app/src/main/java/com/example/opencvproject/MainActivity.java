@@ -134,25 +134,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
-
-        //Creating an empty matrix to store the result
-        Mat dst = new Mat();
-
-        //Creating the transformation matrix M
-        Mat rotationMatrix = Imgproc.getRotationMatrix2D(new Point(240, 320), -90, 1);
-
-        //Rotating the given image
-        Imgproc.warpAffine(mRgba, dst,rotationMatrix, new Size(mRgba.rows(), mRgba.cols()));
-
-
-//        Imgproc.getRotationMatrix2D();
-//
-//        Mat mRgbaT = mRgba.t();
-//        Core.flip(mRgba.t(), mRgbaT, 1);
-        System.out.println(dst.size());
-//        Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
-        // mRgba = v.processImg(dst);
-        return dst;
+        mRgba = v.processImg(mRgba);
+        return mRgba;
     }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
