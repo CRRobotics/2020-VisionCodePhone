@@ -1,7 +1,6 @@
 package com.example.opencvproject;
 
 import java.util.List;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
@@ -30,6 +29,7 @@ import android.view.SurfaceView;
 
 import com.example.opencvproject.R;
 
+import edu.wpi.first.wpilibj.networktables.*;
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
     private static final String  TAG              = "MainActivity";
 
