@@ -12,6 +12,8 @@ import org.opencv.imgproc.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.lang.Math.*;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 // import javax.swing.JSlider;
 
 public class VisionProcessor {
@@ -40,8 +42,19 @@ public class VisionProcessor {
     public static final double MIN_AREA_CONTOUR = 500;
     public static final double CAMERA_ANGLE = 22 * Math.PI / 180 / 10;
     public static final double FOV_X = 54 * Math.PI / 180;
-
     public static final double FOCAL_DISTANCE = (WIDTH / 2) / Math.tan(FOV_X / 2);
+    private NetworkTable sd;
+
+
+    public VisionProcessor()
+    {
+        NetworkTable.setClientMode();
+        // NetworkTable.setNetworkIdentity(IDENTITY + "_" + Parameters.purpose.toString());
+        NetworkTable.setIPAddress("roborio-639-frc.local");
+        NetworkTable.initialize();
+        sd = NetworkTable.getTable("CameraTracker");
+    }
+
 
     /*
      * A helper method that squares numbers, since Math.pow(number, 2) is slower
@@ -250,6 +263,14 @@ public class VisionProcessor {
 
             // If the robotAngle is less than the max angle, tn inner target shot is possible
             boolean innerTargetPossible = robotAngle < MAX_ROBOT_ANGLE;
+
+            sd.putBoolean("InnerTargetPossible", innerTargetPossible);
+            sd.putNumber("OuterHorizontalAngle", round(absoluteOuterHorizontalAngle, 3));
+            sd.putNumber("OuterElevationAngle", round(absoluteOuterElevationAngle, 3));
+            sd.putNumber("OuterHorizontalDistance", Math.abs(round(absoluteOuterHorizontalDistance, 3)));
+            sd.putNumber("InnerHorizontalAngle", round(absoluteInnerHorizontalAngle, 3));
+            sd.putNumber("InnerElevationAngle", round(absoluteInnerElevationAngle, 3));
+            sd.putNumber("InnerHorizontalDistance", Math.abs(round(absoluteInnerHorizontalDistance, 3)));
             // Display all calculated  angles and distances
             Imgproc.putText(img2, "Outer Horizontal Distance: " + str(round(absoluteOuterHorizontalDistance, 2)), new Point(5, 20), 3, 0.5, new Scalar(0, 0, 255), 1, Imgproc.LINE_AA);
             Imgproc.putText(img2, "Outer Horizontal Angle: " + str(round(absoluteOuterHorizontalAngle * 180 / Math.PI, 2)), new Point(5, 40), 3, 0.5, new Scalar(0, 0, 255), 1, Imgproc.LINE_AA);
